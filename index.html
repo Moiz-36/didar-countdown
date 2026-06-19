@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Didar Countdown</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #F5EFE0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .outer {
+      width: 96vw;
+      height: 96vh;
+      background: #F5EFE0;
+      border: 25px solid #8b734c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px;
+      position: relative;
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+    }
+
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-color: #8b734c;
+      border-style: solid;
+    }
+    .corner-tl { top: 12px; left: 12px; border-width: 2px 0 0 2px; }
+    .corner-tr { top: 12px; right: 12px; border-width: 2px 2px 0 0; }
+    .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 2px 2px; }
+    .corner-br { bottom: 12px; right: 12px; border-width: 0 2px 2px 0; }
+
+    .logo {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+    }
+
+
+    .title {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+      font-size: clamp(40px, 7vw, 80px);
+      font-weight: 700;
+      color: #8b734c;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: clamp(22px, 1.5vw, 18px);
+      color: #8b734c;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .divider {
+      width: 160px;
+      height: 1.5px;
+      background: #8b734c;
+      margin: 0 auto 40px;
+    }  
+
+     .countdown-row {
+      display: flex;
+      gap: clamp(12px, 3vw, 36px);
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: clamp(90px, 14vw, 160px);
+    }
+
+    .box {
+      background: transparent;
+      border: 5px solid #8b734c;
+      width: clamp(90px, 14vw, 160px);
+      height: clamp(90px, 14vw, 160px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .box::before {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 1px solid #D4B483;
+    }
+
+    .number {
+      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 700;
+      color: #8b734c;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .sep {
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 300;
+      color: #8b734c;
+      align-self: center;
+      padding-bottom: 36px;
+    }
+
+    .label {
+      margin-top: 12px;
+      font-size: clamp(10px, 1.2vw, 15px);
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #8b734c;
+      font-weight: 600;
+    }
+
+    .date-line {
+      margin-top: 70px;
+      font-size: clamp(40px, 1.5vw, 18px);
+      letter-spacing: 6px;
+      color: #8b734c;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="outer">
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+
+    <img class="logo" src="logo.png" alt="Logo" onerror="this.style.display='none'" />
+
+    <div class="title">Didar Day</div>
+    <div class="subtitle">Countdown</div>
+    <div class="divider"></div>
+
+    <div class="countdown-row">
+      <div class="unit">
+        <div class="box"><span class="number" id="days">00</span></div>
+        <div class="label">Days</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="box"><span class="number" id="hours">00</span></div>
+        <div class="label">Hours</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="box"><span class="number" id="mins">00</span></div>
+        <div class="label">Minutes</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="box"><span class="number" id="secs">00</span></div>
+        <div class="label">Seconds</div>
+      </div>
+    </div>
+
+    
+  </div>
+
+  <script>
+    const target = new Date('2026-07-05T00:00:00');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      const now = new Date();
+      const diff = target - now;
+      if (diff <= 0) {
+        ['days','hours','mins','secs'].forEach(id => document.getElementById(id).textContent = '00');
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('days').textContent = pad(d);
+      document.getElementById('hours').textContent = pad(h);
+      document.getElementById('mins').textContent = pad(m);
+      document.getElementById('secs').textContent = pad(s);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
